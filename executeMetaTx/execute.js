@@ -8,6 +8,7 @@ import { getRelayerAccounts, setRelayerAccounts } from "../utils/utils.service.j
 import { client, MetaTxesCollection } from "../utils/mongo.service.js";
 
 env.config();
+const MAX_GAS_LIMIT = 500000;
 
 export const executeMetatx = async(metaTxDoc) => {
     let isExecuted = false;
@@ -41,7 +42,6 @@ export const executeMetatx = async(metaTxDoc) => {
             console.log(`[INFO] => The Relayer ${relayerAccount.address} is executing the meta tx`);
             metatx.relayer = relayerAccount.address;
 
-            //let transfers = handleTransferInput(web3, metaTxDoc.transfers);
             let transfers = metaTxDoc.transfers;
 
             // contract initilaizations
@@ -116,15 +116,3 @@ export const executeMetatx = async(metaTxDoc) => {
     }
 
 }
-
-// const handleTransferInput = (web3, transfers) => {
-//     for (let transfer of transfers) {
-//         const hexValue = transfer.amount.toString(16);
-//         // const bnAmount = web3.utils.toBN(weiValue);
-//         //transfer.amount = web3.utils.fromWei(transfer.amount, 'ether');
-//         transfer.amount = hexValue;
-//         console.log(transfer.amount);
-//     }
-
-//     return transfers;
-// }
