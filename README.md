@@ -24,7 +24,7 @@ The Receiver contract didn't use delegate for many vulnerability reason:
    
    > Since the contract access caller's storage
    
-However, the 3 token contract was deployed by myself so I tried using delegate call after submitting the assignment, I was able to execute the transaction but i can see the internal transaction fails. Which means the solution provided isn't executing the expected result.
+However, the 3 token contract was deployed by myself so I tried using delegate call after submitting the assignment during my free time, I was able to execute the transaction but i can see the internal transaction fails. Which means the solution provided isn't executing the expected result.
 
 I have provided the contract details that is deployed and tested using delegate call below (check the transaction details):
    
