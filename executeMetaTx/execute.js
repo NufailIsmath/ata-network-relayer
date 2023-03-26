@@ -4,13 +4,13 @@ const require = createRequire(
 import Web3 from "web3";
 import env from "dotenv";
 import { BN } from "web3-utils";
-import { getRelayerAccounts, setRelayerAccounts } from "../utils/utils.service.js";
+import { getRelayerAccounts, setRelayerAccounts, setExecutionStatus } from "../utils/utils.service.js";
 import { client, MetaTxesCollection } from "../utils/mongo.service.js";
 
 env.config();
 const MAX_GAS_LIMIT = 500000;
 
-export const executeMetatx = async(metaTxDoc) => {
+export const executeMetatx = async (metaTxDoc) => {
     let isExecuted = false;
 
     let relayerAccounts = getRelayerAccounts();
@@ -42,13 +42,15 @@ export const executeMetatx = async(metaTxDoc) => {
             console.log(`[INFO] => The Relayer ${relayerAccount.address} is executing the meta tx`);
             metatx.relayer = relayerAccount.address;
 
-            let transfers = metaTxDoc.transfers;
+            let transfers = transferMap(metaTxDoc.transfers);
 
             // contract initilaizations
             const ReceiverABI = require("../ABI/Receiver.json");
-            const contractId = "0xA68Ee0A5b969CaaeA83DC545c8cD996e282ec2B7";
+            const contractId = "0xA68Ee0A5b969CaaeA83DC545c8cD996e282ec2B7"; //"0xE6C7077F2A716C830084cdE4F4fAD32fF86e0b03"; 
 
             const Receiver = new web3.eth.Contract(ReceiverABI, contractId);
+
+            console.log(transfers)
 
             console.log("[INFO] => Estimating Gas");
 
@@ -85,6 +87,7 @@ export const executeMetatx = async(metaTxDoc) => {
 
             if (sentTx) {
                 console.log("[INFO] => Transaction Executed Successfully");
+                console.log(`[INFO] => Trasaction hash: https://mumbai.polygonscan.com/tx/${sentTx.transactionHash}`);
                 isExecuted = true;
 
                 MetaTxesCollection.updateOne({ _id: metaTxDoc._id }, {
@@ -110,9 +113,24 @@ export const executeMetatx = async(metaTxDoc) => {
     }
 
     if (!isExecuted) {
-        setTimeout(function() {
+        setTimeout(function () {
             executeMetatx(metaTxDoc);
         }, 5000);
     }
 
+}
+
+
+const transferMap = (transfers) => {
+    let mappedTransfers = [];
+    for (let transfer of transfers) {
+        let transferObj = {};
+        transferObj.tokenAddress = transfer.tokenAddress;
+        transferObj.recipient = transfer.recipient;
+        transferObj.amount = transfer.amount;
+
+        mappedTransfers.push(transferObj);
+    }
+
+    return mappedTransfers;
 }

@@ -7,14 +7,15 @@ import { executeMetatx } from "./executeMetaTx/execute.js"
 let metaTxReqArr = [];
 
 // refer MINT ERC721 in depro-listener
-export const metaTxListener = async() => {
+export const metaTxListener = async () => {
     console.log("[INFO] => Listening for new Meta Tx Request ...");
+    console.log("[INFO] => Hold on tight! The DB is getting connected ....");
     await client.connect();
     console.log("[INFO] => DB connection successfull");
 
     const MetaTxesChangeStream = MetaTxesCollection.watch();
 
-    cron.schedule('*/15 * * * * *', async() => {
+    cron.schedule('*/15 * * * * *', async () => {
         if (!getExecutionStatus()) {
             if (metaTxReqArr.length > 0) {
                 console.log("[LOG] => In Cron: Executing a Meta Tx");
@@ -26,7 +27,7 @@ export const metaTxListener = async() => {
     });
 
 
-    MetaTxesChangeStream.on("change", async(change) => {
+    MetaTxesChangeStream.on("change", async (change) => {
         if (change.operationType == "insert") {
             if (!change.fullDocument.isExecuted) {
                 console.log("[INFO] => New Meta Tx added to queue");
