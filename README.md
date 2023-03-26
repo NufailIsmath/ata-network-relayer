@@ -8,6 +8,7 @@ To run this NodeJS service:
  ●	Run ```npm run dev``` to start the relayer microservice.
  
  
+ 
  ## Should be noted
 
 Since NodeJS cannot handle concurrency, I have made a recursive function with status to execute transaction based on a QUEUE algorithm. 
@@ -29,6 +30,16 @@ However, the 3 token contract was deployed by myself so I tried using delegate c
 I have provided the contract details that is deployed and tested using delegate call below (check the transaction details):
    
  >  [0x06aed3816d318ed837d0bd5a232a5a26ef530267](https://mumbai.polygonscan.com/address/0x06aed3816d318ed837d0bd5a232a5a26ef530267)
+ 
+ 
+  ## [UPDATED] Solved the ISSUE
+
+The issue is mentioned below: 
+The solution: Since the contract **"Receiver"** is the one is exeuting the batch transfer, eventhough the relayer triggers the transaction (pays gas fee). The approval should be given to the contract **"Receiver"**.
+
+I have update the `ata-network-relayer` and `ata-network-client` with the changes please have a look and let me know if you got any question.
+
+Thank you <3
  
  
   
